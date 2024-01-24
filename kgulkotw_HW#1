@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
+
+// Func to check if a number is prime or not
+bool isPrime(int n) {
+    if (n <= 1) return false;
+    for (int i = 2; i <= sqrt(n); i++) {
+        if (n % i == 0) return false;
+    }
+    return true;
+}
+
+// Func to find the prime number nearest below n
+int nearestPrimeBelow(int n) {
+    while (!isPrime(--n));
+    return n;
+}
+
+// Func to get the sum of digits
+int sumOfDigits(int n) {
+    int sum = 0;
+    while (n != 0) {
+        sum += n % 10;
+        n /= 10;
+    }
+    return sum;
+}
+
+// Func numberTransformer
+void numberTransformer(int n) {
+    if (isPrime(n) && n != 3 && n != 5) {
+        printf("Go Blazers\n");
+    } else if ((n & (n - 1)) == 0) {
+        int nearestPrime = nearestPrimeBelow(n);
+        printf("%d\n", n + nearestPrime);
+    } else if (sumOfDigits(n) % 3 == 0) {
+        printf("CS\n");
+    } else if (n % 3 == 0 && n % 5 == 0) {
+        printf("UAB CS 332&532\n");
+    } else {
+        int square = pow(sumOfDigits(n), 2);
+        printf("%d\n", square);
+    }
+}
+
+// Func UABNumber
+bool UABNumber(int n2) {
+    int sum = 0;
+    for (int i = 1; i <= n2 / 2; i++) {
+        if (n2 % i == 0) {
+            sum += i;
+        }
+    }
+    return (sum == n2);
+}
+
+// Func reverseNum
+int reverseNum(int n3) {
+    int reversed = 0;
+    while (n3 != 0) {
+        reversed = reversed * 10 + n3 % 10;
+        n3 /= 10;
+    }
+    return reversed;
+}
+
+// Func smallerThanIndex
+int smallerThanIndex(int numbers[], int size) {
+    int count = 0;
+    for (int i = 0; i < size; i++) {
+        if (numbers[i] < i) {
+            count++;
+        }
+    }
+    return count;
+}
+
+// Func arrayDetails
+void arrayDetails(int arr[]) {
+    int min = arr[0], minIndex = 0, max = arr[0], maxIndex = 0, sum = 0;
+    for (int i = 0; i < 6; i++) {
+        sum += arr[i];
+        if (arr[i] < min) {
+            min = arr[i];
+            minIndex = i;
+        }
+        if (arr[i] > max) {
+            max = arr[i];
+            maxIndex = i;
+        }
+    }
+    float mean = (float)sum / 6;
+    printf("[%d, %d, %.2f, %d, %d]\n", min, minIndex, mean, max, maxIndex);
+}
+
+int main() {
+    // Test cases
+    numberTransformer(3);
+    numberTransformer(64);
+    numberTransformer(17);
+    numberTransformer(10);
+    numberTransformer(30);
+
+    int n2;
+    printf("Enter an integer for UABNumber: ");
+    scanf("%d", &n2);
+    printf("UABNumber result: %s\n", UABNumber(n2) ? "True" : "False");
+
+    int n3;
+    printf("Enter an integer for reverseNum: ");
+    scanf("%d", &n3);
+    printf("reverseNum result: %d\n", reverseNum(n3));
+
+    int numbers1[] = {10, 20, 1, 2, 30};
+    int numbers2[] = {1, 2, 0, 44, 29};
+    int numbers3[] = {-4, -3, 2, 1, 0};
+
+    printf("smallerThanIndex result 1: %d\n", smallerThanIndex(numbers1, 5));
+    printf("smallerThanIndex result 2: %d\n", smallerThanIndex(numbers2, 5));
+    printf("smallerThanIndex result 3: %d\n", smallerThanIndex(numbers3, 5));
+
+    int arr[] = {-8, 18, 103, 1, -4, 631};
+    arrayDetails(arr);
+
+    return 0;
+}
