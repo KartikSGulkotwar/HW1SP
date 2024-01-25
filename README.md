@@ -13,3 +13,4 @@ Open terminal and navigate the directory for the source code.
 Enter command: gcc kgulkotw_HW#1.c -lm
 gcc -o anyname kgulkotw_HW#1.c -lm
 After compilation program will prompt some output and will ask to enter ian integer for UABNumber and for reverseNum and will give the prompt for the result for smallerThanIndex and arrayDetails.
+## Link for Repository: https://github.com/KartikSGulkotwar/HW1SP
