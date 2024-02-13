@@ -4,8 +4,8 @@ TARGET=search
 
 all: $(TARGET)
 
-$(TARGET): search.c
-	$(CC) $(CFLAGS) search.c -o $(TARGET)
+$(TARGET): kgulkotw_HW02.c
+	$(CC) $(CFLAGS) kgulkotw_HW02.c -o $(TARGET)
 
 clean:
 	rm -f $(TARGET)
