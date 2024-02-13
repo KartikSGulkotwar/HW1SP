@@ -17,7 +17,7 @@ typedef struct {
 
 Options opts = {0, -1, NULL, -1, 0};
 
-void parseOptions(int argc, char *argv[]) {
+void parseOptions_(int argc, char *argv[]) {
     int opt;
     while ((opt = getopt(argc, argv, "vL:s:t:")) != -1) {
         switch (opt) {
@@ -47,7 +47,7 @@ void parseOptions(int argc, char *argv[]) {
 }
 
 
-void printFileInfo(struct stat *statbuf, const char *name, const char *linkTarget, int depth, char isDirectory) {
+void printFileInfo_(struct stat *statbuf, const char *name, const char *linkTarget, int depth, char isDirectory) {
     // Generate indentation based on depth
     char indent[256] = {0};
     for (int i = 0; i < depth && i < sizeof(indent) - 1; i++) {
@@ -102,7 +102,7 @@ void traverse(const char *dirPath, int currentDepth) {
         // Print directories or files based on the verbose flag and fileType
         if (isDirectory) {
             if (opts.verbose || opts.fileType == 'd') {
-                printFileInfo(&statbuf, entry->d_name, NULL, currentDepth, 1);
+                printFileInfo_(&statbuf, entry->d_name, NULL, currentDepth, 1);
             }
             if (currentDepth < opts.searchDepth || opts.searchDepth == -1) {
                 // printf("%s%s:\n", indent, entry->d_name); // Print the directory name with indentation
@@ -111,7 +111,7 @@ void traverse(const char *dirPath, int currentDepth) {
         } else {
             // It's a file, check if we're listing files
             if (opts.fileType != 'd') {
-                printFileInfo(&statbuf, entry->d_name, NULL, currentDepth, 0);
+                printFileInfo_(&statbuf, entry->d_name, NULL, currentDepth, 0);
             }
         }
     }
@@ -121,7 +121,7 @@ void traverse(const char *dirPath, int currentDepth) {
 
 
 int main(int argc, char *argv[]) {
-    parseOptions(argc, argv);
+    parseOptions_(argc, argv);
 
     char *startDir = ".";
     if (argc > optind) {
