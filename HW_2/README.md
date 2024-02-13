@@ -15,4 +15,4 @@ To compile the program, enter the following command:
 gcc -o search kgulkotw_HW02.c
 
 ## Link for Repository: 
- 
+ https://github.com/KartikSGulkotwar/HWSP/tree/main/HW_2
