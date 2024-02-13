@@ -4,10 +4,10 @@ TARGET=search
 
 all: $(TARGET)
 
-$(TARGET): kgulkotw_HW02.c
-    $(CC) $(CFLAGS) kgulkotw_HW02.c -o $(TARGET)
+$(TARGET): search.c
+	$(CC) $(CFLAGS) search.c -o $(TARGET)
 
 clean:
-    rm -f $(TARGET)
+	rm -f $(TARGET)
 
 .PHONY: all clean
