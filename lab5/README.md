@@ -4,4 +4,4 @@ Item Counting: Each item within a directory is numbered to provide a clearer con
 ### Compilation
 gcc -o  traverse lab5.c
 
-Link for Repository:
+Link for Repository: https://github.com/KartikSGulkotwar/HWSP/tree/main/lab5
