@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Define the structure for listing
+// Defining the structure for listing
 struct listing {
     int id, host_id, minimum_nights, number_of_reviews, calculated_host_listings_count, availability_365;
     char *host_name, *neighbourhood_group, *neighbourhood, *room_type;
     float latitude, longitude, price;
 };
 
-// Function to parse each line and return a listing structure
+// Function to parse each line for returning a listing structure
 struct listing getfields(char* line) {
     struct listing item;
     item.id = atoi(strtok(line, ","));
@@ -28,12 +28,12 @@ struct listing getfields(char* line) {
     return item;
 }
 
-// Comparison function for qsort based on host_name
+// Comparing function for qsort based on host_name
 static int compareByHostName(const void *a, const void *b) {
     return strcmp(((struct listing *)a)->host_name, ((struct listing *)b)->host_name);
 }
 
-// Comparison function for qsort based on price
+// Comparison function for qsort based on the price
 static int compareByPrice(const void *a, const void *b) {
     return (((struct listing *)a)->price > ((struct listing *)b)->price) - (((struct listing *)a)->price < ((struct listing *)b)->price);
 }
@@ -43,32 +43,32 @@ int main() {
     char line[1024];
     int numberOfListings = 0;
 
-    // Open the input file
+    // Opening the input file
     inputFile = fopen("listings.csv", "r");
     if (inputFile == NULL) {
         perror("Error opening file");
         return EXIT_FAILURE;
     }
 
-    // Count the number of lines in the file
+    // Counting the number of lines in the file
     while (fgets(line, sizeof(line), inputFile) != NULL) {
         numberOfListings++;
     }
-    rewind(inputFile); // Reset file pointer to the beginning
+    rewind(inputFile); 
 
-    // Allocate memory for an array of listings
+   
     struct listing *listings = malloc(numberOfListings * sizeof(struct listing));
 
-    // Read each line, parse it, and store it in the array
+    
     for (int i = 0; i < numberOfListings; i++) {
         fgets(line, sizeof(line), inputFile);
         listings[i] = getfields(line);
     }
 
-    // Close the input file
+    
     fclose(inputFile);
 
-    // Sort by host_name using qsort
+    
     qsort(listings, numberOfListings, sizeof(struct listing), compareByHostName);
 
     // Open a new file for sorted by host_name
