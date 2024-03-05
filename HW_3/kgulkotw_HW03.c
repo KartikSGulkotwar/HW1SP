@@ -1,3 +1,11 @@
+/*
+Name: Kartik Gulkotwar
+BlazerId: kgulkotw
+Project #: HW3
+To compile: <instructions for compiling the
+program> To run: <instructions to run the
+program>
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
