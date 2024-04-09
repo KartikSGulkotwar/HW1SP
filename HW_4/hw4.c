@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <time.h>
+#include <ctype.h> 
 
 #define MAX_COMMAND_LENGTH 100
+#define MAX_ARGUMENTS 10
 #define MAX_JOBS 100
 
 typedef struct {
@@ -22,73 +26,111 @@ typedef struct {
 
 JobScheduler scheduler;
 
+void initializeScheduler() {
+    scheduler.job_count = 0;
+    pthread_mutex_init(&scheduler.mutex, NULL);
+}
+
 void* executeJob(void* arg) {
-    while (1) {
-        // Acquire lock to access the shared queue
-        pthread_mutex_lock(&scheduler.mutex);
-
-        // Check if there are pending jobs
-        if (scheduler.job_count > 0) {
-            // Get the job from the queue
-            Job job = scheduler.jobs[--scheduler.job_count];
-
-            // Release lock
-            pthread_mutex_unlock(&scheduler.mutex);
-
-            // Execute the job (for example, using system() or fork/exec)
-            system(job.command);
-
-            // Update job status
-            // Here, you would update job.status, start_time, end_time, etc.
-
-        } else {
-            // Release lock
-            pthread_mutex_unlock(&scheduler.mutex);
-
-            // If no jobs, sleep for some time before checking again
-            sleep(1);
-        }
-    }
+    
     return NULL;
 }
 
-void submitJob(const char* command) {
-    // Acquire lock to access the shared queue
+void submitJob(char *command) {
     pthread_mutex_lock(&scheduler.mutex);
 
-    // Add the job to the queue
+    if (scheduler.job_count >= MAX_JOBS) {
+        printf("Maximum jobs limit reached.\n");
+        pthread_mutex_unlock(&scheduler.mutex);
+        return;
+    }
+
     Job job;
-    job.job_id = scheduler.job_count + 1;
-    snprintf(job.command, sizeof(job.command), "%s", command);
-    snprintf(job.status, sizeof(job.status), "Pending");
-    // Set start_time, end_time, etc. as needed
+    job.job_id = ++scheduler.job_count;
+    strncpy(job.command, command, MAX_COMMAND_LENGTH - 1);
+    job.command[MAX_COMMAND_LENGTH - 1] = '\0';
+    strncpy(job.status, "Running", sizeof(job.status));
+    job.status[sizeof(job.status) - 1] = '\0';
+    job.start_time = time(NULL);
 
-    scheduler.jobs[scheduler.job_count++] = job;
+    scheduler.jobs[scheduler.job_count - 1] = job;
+    pthread_mutex_unlock(&scheduler.mutex);
 
-    // Release lock
+    printf("Job %d added to the queue\n", job.job_id);
+}
+
+void showJobs() {
+    pthread_mutex_lock(&scheduler.mutex);
+
+    if (scheduler.job_count == 0) {
+        printf("No jobs in the queue\n");
+    } else {
+        printf("jobid command status\n");
+        for (int i = 0; i < scheduler.job_count; ++i) {
+            printf("%d %s %s\n", scheduler.jobs[i].job_id, scheduler.jobs[i].command, scheduler.jobs[i].status);
+        }
+    }
+
+    pthread_mutex_unlock(&scheduler.mutex);
+}
+
+void submitHistory() {
+    pthread_mutex_lock(&scheduler.mutex);
+
+    if (scheduler.job_count == 0) {
+        printf("No job history available\n");
+    } else {
+        printf("jobid command starttime endtime status\n");
+        for (int i = 0; i < scheduler.job_count; ++i) {
+            printf("%d %s %s %s %s\n", scheduler.jobs[i].job_id, scheduler.jobs[i].command, 
+                   asctime(localtime(&scheduler.jobs[i].start_time)), asctime(localtime(&scheduler.jobs[i].end_time)),
+                   scheduler.jobs[i].status);
+        }
+    }
+
     pthread_mutex_unlock(&scheduler.mutex);
 }
 
 int main() {
-    // Initialize mutex
-    pthread_mutex_init(&scheduler.mutex, NULL);
+    initializeScheduler();
 
-    // Initialize job count
-    scheduler.job_count = 0;
-
-    // Create worker threads for job execution
     pthread_t worker;
     pthread_create(&worker, NULL, executeJob, NULL);
 
-    // Submit some sample jobs
-    submitJob("echo Job 1");
-    submitJob("echo Job 2");
+    char input[MAX_COMMAND_LENGTH];
+    while (1) {
+        printf("Enter command> ");
+        fgets(input, sizeof(input), stdin);
+        input[strcspn(input, "\n")] = '\0';
 
-    // Wait for the worker thread to finish (in practice, you would have some termination condition)
+        char *command = strtok(input, " ");
+        if (command == NULL) {
+            printf("Invalid command\n");
+            continue;
+        }
+
+        
+        for (int i = 0; command[i]; ++i) {
+            command[i] = tolower(command[i]);
+        }
+
+        if (strcmp(command, "submit") == 0) {
+            char *job_command = strtok(NULL, "");
+            if (job_command != NULL) {
+                submitJob(job_command);
+            } else {
+                printf("Invalid command format. Usage: submit <job_command>\n");
+            }
+        } else if (strcmp(command, "showjobs") == 0 || strcmp(command, "jobs") == 0) {
+            showJobs();
+        } else if (strcmp(command, "submithistory") == 0) {
+            submitHistory();
+        } else {
+            printf("Invalid command\n");
+        }
+    }
+
     pthread_join(worker, NULL);
-
-    // Destroy mutex
     pthread_mutex_destroy(&scheduler.mutex);
-
     return 0;
 }
