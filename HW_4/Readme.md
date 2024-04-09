@@ -15,3 +15,5 @@ The Job Scheduler program allows users to submit, manage, and track the executio
 To compile the Job Scheduler program, 
 
    gcc -o Scheduler hw4r.c -pthread
+
+Link for Repository: https://github.com/KartikSGulkotwar/HWSP/tree/main/HW_4
